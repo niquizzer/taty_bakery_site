@@ -1,20 +1,24 @@
-"use client";
+import AddCart from '../components/AddCart'
 
-import { CartProvider } from "use-shopping-cart";
-import App from "./App";
+export default async function IndexPage({ searchParams }) {
+    const { canceled } = await searchParams
+  
+    if (canceled) {
+      console.log(
+        'Order canceled -- continue to shop around and checkout when you’re ready.'
+      )
+    }
 
-export default function Home() {
-  return (
-    <CartProvider
-    mode ="payment"
-    stripe={process.env.STRIPE_PUBLIC_KEY}
-    currency="USD"
-    successUrl="stripe.com"
-    cancelUrl="google.com"
-    allowedCountries={["US", "CA"]}
-    billingAddressCollection={true}
-    >
-    <App />
-    </CartProvider>
-  ) 
-}
+    return (
+        <div>
+      <form action="/api/checkout_sessions" method="POST">
+        <section>
+          <button type="submit" role="link">
+            Checkout
+          </button>
+        </section>
+      </form>
+      <AddCart />
+      </div>
+    )
+  }

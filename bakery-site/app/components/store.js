@@ -11,6 +11,10 @@ export default store = () => {
                 return {
                     //todo
                 };
+            case "CHECKOUT":
+                return {
+                    //todo
+                };
             default:
                 return state;
         }
