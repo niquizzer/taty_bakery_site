@@ -1,3 +1,5 @@
+"use client";
+
 import addToCart from "@/data/cartData";
 
 const AddCart = () => {
