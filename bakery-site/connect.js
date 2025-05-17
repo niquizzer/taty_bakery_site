@@ -15,13 +15,12 @@ const db = new sqlite3.Database(
 // Run all these steps in order
 db.serialize (() => {
     db.run (
-        `CREATE TABLE IF NOT EXISTS items (
-            id INTEGER PRIMARY KEY,
-            name TEXT,
-            price INTEGER,
-            quantity INTEGER,
-            description TEXT,
-            img TEXT
+        `CREATE TABLE cart_items (
+            id INTEGER AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            quantity INTEGER NOT NULL DEFAULT 1,
+            FOREIGN KEY (product_id) REFERENCES items(id)
           )`,
           (err) => {
             if (err) {
@@ -30,40 +29,4 @@ db.serialize (() => {
           }
     )
     console.log("Created items table");
-
-    const cakePop = [
-        "Cake Pops",
-        5,
-        10
-    ];
-    const chocolateCake = [
-        "Chocolate Cake",
-        5,
-        10
-    ];
-
-    const insertSql = 'INSERT INTO items(name, price, quantity) VALUES (?, ?, ?)';
-
-    db.run(insertSql, cakePop, function (err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        const id = this.lastID;
-        console.log ('Rows inserted, ID ${id}');
-    })
-    db.run(insertSql, chocolateCake, function (err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        const id = this.lastID;
-        console.log ('Rows inserted, ID ${id}');
-    })
-
-    db.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log("Closed the DB connection")
-    })
-
     })

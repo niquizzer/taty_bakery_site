@@ -10,17 +10,7 @@ export async function POST() {
         const origin = headersList.get("origin");
 
         const lineItems = cartData.map((product) => {
-            return {
-                price_data: {
-                    currency: "usd",
-                    product_data: {
-                        name: product.name,
-                        description: product.description,
-                    },
-                    unit_amount: product.price * 100,
-                },
-                quantity: product.quantity,
-            };
+        //todo  
         });
         // Create Checkout Sessions from body params.
         const session = await stripe.checkout.sessions.create({
