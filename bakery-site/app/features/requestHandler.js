@@ -1,0 +1,41 @@
+export const addCart = async () => {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const res = await fetch(`${backendUrl}/add-cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId: 1, quantity: 1 }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to add to cart: ${res.status}`);
+    }
+    const data = await res.json();
+    console.log("addCart response: ", data);
+
+  } catch (err) {
+    console.error("Error in addCart:", err.message);
+  }
+};
+
+export const handleCheckout = async () => {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const res = await fetch(`${backendUrl}/checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId: 1, quantity: 1 }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to checkout: ${res.status}`);
+    }
+    const data = await res.json();
+    console.log("checkout response: ", data);
+
+  } catch (err) {
+    console.error("Error in checkout:", err.message);
+  }
+};
