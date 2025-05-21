@@ -1,47 +1,62 @@
 import sqlite3 from "sqlite3";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Conntecting to/creating a new SQLite database
+//Grab the current file path
+const __filename = fileURLToPath(import.meta.url);
+
+//Get the directory of current file path
+const __dirname = path.dirname(__filename);
+
+// Resolve the database path
+const dbPath = path.resolve(__dirname, "./collection.db");
+console.log("Current dbPath: ", dbPath)
+
+// Connecting to/creating a new SQLite database
 const db = new sqlite3.Database(
-    "./collection.db",
-    sqlite3.OPEN_READWRITE,
-    (err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log("Connected to the SQLite DB");
+  dbPath,
+  sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+  (err) => {
+    if (err) {
+      return console.error("Error opening database:", err.message);
     }
+    console.log("Connected to the SQLite DB");
+  }
 );
 
 // Run all these steps in order
-db.serialize (() => {
-    db.run (
-        `CREATE TABLE IF NOT EXISTS cart_items (
-            id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            quantity INTEGER NOT NULL,
-            price INTEGER NOT NULL DEFAULT 1
-          )`,
-          (err) => {
-            if (err) {
-                return console.error(err.message);
-            }
-          }
-    )
-    })
+db.run(
+  `CREATE TABLE IF NOT EXISTS cart_items (
+      id INTEGER PRIMARY KEY NOT NULL,
+      name TEXT NOT NULL,
+      quantity INTEGER NOT NULL,
+      price INTEGER NOT NULL DEFAULT 1
+  )`,
+  (err) => {
+    if (err) {
+      return console.error("Error creating table:", err.message);
+    }
+    console.log("Table created successfully.");
+  }
+);
 
-    export const execute = async (db, sql, params = []) => {
-        if (params && params.length > 0) {
-          return new Promise((resolve, reject) => {
-            db.run(sql, params, (err) => {
-              if (err) reject(err);
-              resolve();
-            });
-          });
+// Execute function for running SQL queries
+export const execute = (db, sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    if (params.length > 0) {
+      db.run(sql, params, (err) => {
+        if (err) {
+          return reject(err);
         }
-        return new Promise((resolve, reject) => {
-          db.exec(sql, (err) => {
-            if (err) reject(err);
-            resolve();
-          });
-        });
-      };
+        resolve();
+      });
+    } else {
+      db.exec(sql, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    }
+  });
+};

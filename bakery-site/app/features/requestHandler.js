@@ -19,7 +19,7 @@ export const addCart = async (id, name, quantity, price) => {
   }
 };
 
-export const handleCheckout = async () => {
+export const handleCheckout = async (id) => {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const res = await fetch(`${backendUrl}/checkout`, {
@@ -27,7 +27,7 @@ export const handleCheckout = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ productId: 1, quantity: 1 }),
+      body: JSON.stringify({ id }),
     });
     if (!res.ok) {
       throw new Error(`Failed to checkout: ${res.status}`);
