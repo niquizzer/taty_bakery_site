@@ -1,4 +1,4 @@
-export const addCart = async () => {
+export const addCart = async (id, name, quantity, price) => {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const res = await fetch(`${backendUrl}/add-cart`, {
@@ -6,7 +6,7 @@ export const addCart = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ productId: 1, quantity: 1 }),
+      body: JSON.stringify({ id, name, quantity, price }),
     });
     if (!res.ok) {
       throw new Error(`Failed to add to cart: ${res.status}`);

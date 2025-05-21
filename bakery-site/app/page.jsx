@@ -9,7 +9,10 @@ export default function IndexPage() {
           <button onClick={() => handleCheckout()}>
             Checkout
           </button>
-          <button onClick={() => addCart()}>
+          <button onClick={() => addCart(1, "Cake Pops", 1, 5)}>
+            Add to Cart
+          </button>
+          <button onClick={() => addCart(1, "Chocolate Cake", 1, 20)}>
             Add to Cart
           </button>
       </div>
