@@ -19,22 +19,21 @@ export const addCart = async (id, name, quantity, price) => {
   }
 };
 
-export const handleCheckout = async (id) => {
+export const handleCheckout = async () => {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const res = await fetch(`${backendUrl}/checkout`, {
-      method: "POST",
+    const res = await fetch(`${backendUrl}/load-checkout`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id }),
     });
     if (!res.ok) {
       throw new Error(`Failed to checkout: ${res.status}`);
     }
-    const data = await res.json();
-    console.log("checkout response: ", data);
-
+    const rows = await res.json();
+    console.log("checkout response: ", rows);
+    return rows;
   } catch (err) {
     console.error("Error in checkout:", err.message);
   }

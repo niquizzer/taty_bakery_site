@@ -4,9 +4,10 @@ import { handleCheckout } from "./features/requestHandler"
 import { addCart } from "./features/requestHandler"
 
 export default function IndexPage() {
+  //todo -> all you need to do is link the checkout button to the checkout route
    return (
         <div>
-          <button onClick={() => handleCheckout()}>
+          <button type="link">
             Checkout
           </button>
           <button onClick={() => addCart(1, "Cake Pops", 1, 5)}>

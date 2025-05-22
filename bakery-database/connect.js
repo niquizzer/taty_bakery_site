@@ -39,24 +39,3 @@ db.run(
     console.log("Table created successfully.");
   }
 );
-
-// Execute function for running SQL queries
-export const execute = (db, sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    if (params.length > 0) {
-      db.run(sql, params, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
-      });
-    } else {
-      db.exec(sql, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
-      });
-    }
-  });
-};
