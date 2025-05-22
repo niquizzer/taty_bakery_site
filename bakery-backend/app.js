@@ -22,9 +22,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-const sql_create = `INSERT INTO cart_items(id, name, price, quantity) VALUES (?,?,?,?)`;
-const sql_delete = `DELETE FROM cart_items() WHERE quantity -= 1`;
+const sql_create = `
+  INSERT INTO cart_items(name, quantity, price)
+  VALUES (?, ?, ?)
+  ON CONFLICT(name) DO UPDATE SET quantity = quantity + excluded.quantity
+`;
+const sql_delete = `DELETE FROM cart_items WHERE id = ? AND quantity = 0`;
 const sql_read = `SELECT * FROM cart_items`;
+const sql_update = ``;
 
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
@@ -38,7 +43,7 @@ app.post("/add-cart", async (req, res) => {
     data: data,
   });
   try {
-    db.run(sql_create, [data.id, data.name, data.quantity, data.price], (err) => {
+    db.run(sql_create, [data.name, data.quantity, data.price], (err) => {
         if (err) {
             console.error("Trouble sending data to DB: ", err.message);
         } else {
@@ -62,15 +67,17 @@ app.get("/load-checkout", async (req, res) => {
     });
 });
 app.delete("/delete", async (req, res) => {
-    //todo
-    console.log("I have a delete req");
-    db.run(sql_delete, [], (err) => {
+    const { id } = req.body;
+    console.log("I have a delete req for id:", id);
+    db.run(sql_delete, [id], (err) => {
         if (err) {
             console.error("There's a problem deleting this item: ", err.message);
+            res.status(500).json({ message: "Delete failed" });
         } else {
             console.log("Item deleted successfully");
+            res.json({ message: "Item deleted if quantity was 0" });
         }
-    })
+    });
 });
 app.post("/checkout", async (req, res) => {
   console.log("I have a checkout req");

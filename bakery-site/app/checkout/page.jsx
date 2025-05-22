@@ -1,22 +1,27 @@
-import { handleCheckout } from "../features/requestHandler"
+"use client"
+
 import { useEffect } from "react";
-
-//Create a useEffect that awaits for the handleCheckout promise on component load
-//Update state (redux store or useState)
-//Display row data in UL
-
-const checkout_data = await handleCheckout();
-console.log("Checkout page data: ", checkout_data);
+import { useDispatch, useSelector } from "react-redux";
+import { loadCheckout } from "./checkoutSlice";
 
 const checkoutPage = () => {
+    const dispatch = useDispatch();
+    const items = useSelector((state) => state.cart.items);
+   
     useEffect(() => {
-        //todo
-    }, [])
+       dispatch(loadCheckout()); 
+    }, [dispatch])
     return(
         <div>
             <ul>
-
+                {items.map((item) => {
+                    <li key={item.name}>
+                        {item.name} - Quantity: {item.quantity}
+                    </li>
+                })}
             </ul>
         </div>
     )
 }
+
+export default checkoutPage;

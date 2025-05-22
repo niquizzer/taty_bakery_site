@@ -1,22 +1,10 @@
+import { configureStore } from '@reduxjs/toolkit';
+import cartReducer from '../checkout/checkoutSlice';
 
-export default store = () => {
+const store = configureStore({
     reducer: {
-        //todo
-        switch (action, state) {
-            case "ADD_ITEM":
-                return {
-                    //todo  
-                };
-            case "REMOVE_ITEM":
-                return {
-                    //todo
-                };
-            case "CHECKOUT":
-                return {
-                    //todo
-                };
-            default:
-                return state;
-        }
+        cart: cartReducer,
     }
-}
+});
+
+export default store;

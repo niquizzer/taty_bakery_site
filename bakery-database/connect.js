@@ -27,10 +27,10 @@ const db = new sqlite3.Database(
 // Run all these steps in order
 db.run(
   `CREATE TABLE IF NOT EXISTS cart_items (
-      id INTEGER PRIMARY KEY NOT NULL,
-      name TEXT NOT NULL,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
       quantity INTEGER NOT NULL,
-      price INTEGER NOT NULL DEFAULT 1
+      price REAL NOT NULL 
   )`,
   (err) => {
     if (err) {
