@@ -8,7 +8,18 @@ export const addItem = createAsyncThunk('cart/create', async ({ name, quantity, 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, quantity, price })
-    })
+    });
+    return await res.json();
+})
+export const removeItem = createAsyncThunk('cart/delete', async ({name}) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const res = await fetch(`${backendUrl}/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({name})
+    });
     return await res.json();
 })
 export const loadCheckout = createAsyncThunk('cart/get', async () => {
@@ -44,15 +55,28 @@ const cartSlice = createSlice({
         })
         .addCase(addItem.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.loading.error;
+            state.error = action.error;  // Remove .loading
         })
         //loadItems
         .addCase(loadCheckout.fulfilled, (state, action) => {
-          state.loading = false;
-          state.items = action.payload;
+            state.loading = false;
+            state.items = action.payload;
+        })
+        //removeItem
+        .addCase(removeItem.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(removeItem.fulfilled, (state, action) => {
+            state.loading = false;
+            state.items = action.payload;  // Update cart with new state from server
+        })
+        .addCase(removeItem.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error;
         })
     }
 });
 
-export { addItem, loadCheckout};
+// Bottom exports should include removeItem
+export { addItem, removeItem, loadCheckout };
 export default cartSlice.reducer;

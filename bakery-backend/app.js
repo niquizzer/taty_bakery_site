@@ -27,9 +27,16 @@ const sql_create = `
   VALUES (?, ?, ?)
   ON CONFLICT(name) DO UPDATE SET quantity = quantity + excluded.quantity
 `;
-const sql_delete = `DELETE FROM cart_items WHERE id = ? AND quantity = 0`;
+const sql_delete = `DELETE FROM cart_items WHERE name = ?`;
 const sql_read = `SELECT * FROM cart_items`;
-const sql_update = ``;
+const sql_update_add = `UPDATE cart_items
+SET quantity = quantity + 1
+WHERE name = ?`;
+const sql_update_subtract = `UPDATE cart_items
+SET quantity = quantity - 1
+WHERE name = ?
+IF (quantity <= 0, DELETE FROM cart_items WHERE name = ?)`;
+
 
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
@@ -38,20 +45,26 @@ app.use(express.json());
 app.post("/add-cart", async (req, res) => {
   const data = req.body;
   console.log("I have an add-cart req: ", data);
-  res.json({ 
-    message: "Items successfully added to cart",
-    data: data,
-  });
   try {
     db.run(sql_create, [data.name, data.quantity, data.price], (err) => {
         if (err) {
             console.error("Trouble sending data to DB: ", err.message);
+            res.status(500).json({ message: "Failed to add item" });
         } else {
-            console.log("Successfully sent data to DB");
+            // After successful insert/update, get all items
+            db.all(sql_read, [], (err, rows) => {
+                if (err) {
+                    console.error("Error getting updated cart items: ", err.message);
+                    res.status(500).json({ message: "Failed to get updated cart" });
+                } else {
+                    res.send(rows);  // Send back the array of all cart items
+                }
+            });
         }
     });
   } catch (err) {
     console.error(err.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 // Retrieves rows from the cart_data table
@@ -67,22 +80,39 @@ app.get("/load-checkout", async (req, res) => {
     });
 });
 app.delete("/delete", async (req, res) => {
-    const { id } = req.body;
-    console.log("I have a delete req for id:", id);
-    db.run(sql_delete, [id], (err) => {
-        if (err) {
-            console.error("There's a problem deleting this item: ", err.message);
-            res.status(500).json({ message: "Delete failed" });
-        } else {
-            console.log("Item deleted successfully");
-            res.json({ message: "Item deleted if quantity was 0" });
-        }
-    });
+    const { name } = req.body;
+    console.log("I have a delete req for item:", name);
+    try {
+      db.run(sql_delete, [name], (err) => {
+          if (err) {
+              console.error("There's a problem deleting this item: ", err.message);
+              res.status(500).json({ message: "Delete failed" });
+          } else {
+              // After successful delete, get all items
+              db.all(sql_read, [], (err, rows) => {
+                  if (err) {
+                      console.error("Error getting updated cart items: ", err.message);
+                      res.status(500).json({ message: "Failed to get updated cart" });
+                  } else {
+                      res.send(rows);  // Send back the array of all cart items
+                  }
+              });
+          }
+      });
+    } catch (error) {
+      console.error("Error deleting item: ", error.message);
+      res.status(500).json({ message: "Server error" });
+    }
 });
 app.post("/checkout", async (req, res) => {
   console.log("I have a checkout req");
-  res.json({ message: "Checkout successfully initiated" });
-  db.run()
+  try {
+    // Add your checkout logic here
+    res.json({ message: "Checkout successfully initiated" });
+  } catch (error) {
+    console.error("Checkout error:", error.message);
+    res.status(500).json({ message: "Checkout failed" });
+  }
 });
 
 app.listen(8000, () => {
