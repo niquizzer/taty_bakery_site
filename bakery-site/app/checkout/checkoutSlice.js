@@ -20,8 +20,7 @@ export const loadCheckout = createAsyncThunk('cart/get', async () => {
       },
     })
     const data = await res.json()
-    console.log("Load checkout data: ", data);
-
+    console.log("Load checkout data successful");
     return data;
 })
 
@@ -46,6 +45,11 @@ const cartSlice = createSlice({
         .addCase(addItem.rejected, (state, action) => {
             state.loading = false;
             state.error = action.loading.error;
+        })
+        //loadItems
+        .addCase(loadCheckout.fulfilled, (state, action) => {
+          state.loading = false;
+          state.items = action.payload;
         })
     }
 });
