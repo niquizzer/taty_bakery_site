@@ -15,7 +15,7 @@ const checkoutPage = () => {
     dispatch(removeItem({ name }));
   };
   const updateCart = (name, adjustment) => {
-    dispatch(adjustCartAmount({name, adjustment}))
+    dispatch(adjustCartAmount({ name, adjustment }));
   };
   useEffect(() => {
     dispatch(loadCheckout());
