@@ -3,6 +3,7 @@
 import { useDispatch } from 'react-redux';
 import { addItem } from '../checkout/checkoutSlice';
 import { useRouter } from 'next/navigation';
+import { updateItem } from '../checkout/checkoutSlice';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,9 @@ const App = () => {
         const data = dispatch(addItem({ name, quantity, price }));
         console.log("Adding items to cart: ", data);
     };
+    const handleUpdateCart = (name, adjustment) => {
+      //todo dispatch
+    }
     return (
     <div>
         <button type="button" onClick={() => router.push('/checkout')}>
